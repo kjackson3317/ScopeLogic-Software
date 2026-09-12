@@ -1,0 +1,12 @@
+{
+  "batch": "ScopeLogic Software Alpha 1 - Batch 1",
+  "purpose": "Monorepo foundation and static UI shell only",
+  "file_count": 30,
+  "live_app_touched": false,
+  "supabase_connected": false,
+  "approved_brand": {
+    "primary_green": "#4B6623",
+    "dark_green": "#3D5320",
+    "charcoal": "#1F2937"
+  }
+}
