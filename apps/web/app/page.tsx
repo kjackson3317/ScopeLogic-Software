@@ -63,7 +63,7 @@ export default async function HomePage() {
         actionHref="/projects/new"
       />
 
-      <section className="metric-grid" aria-label="Workspace summary">
+      <section className="metrics" aria-label="Workspace summary">
         <MetricCard label="Active Projects" value={String(activeProjects)} detail="Accessible to your account" />
         <MetricCard label="Quotes In Progress" value={String(quoteCount)} detail={`${money(quoteSell)} current sell`} />
         <MetricCard label="Awaiting Approval" value={String(awaitingApproval)} detail="Quotes in internal review" />
