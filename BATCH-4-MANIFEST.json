@@ -1,0 +1,13 @@
+{
+  "batch": "ScopeLogic Software Alpha 1 - Batch 4",
+  "purpose": "Structured Quote workspace, estimate lines, immutable versions, revisions",
+  "replace_existing": [
+    "apps/web/app/quotes/page.tsx",
+    "apps/web/app/projects/[id]/page.tsx",
+    "apps/web/app/globals-batch-3.css",
+    "apps/web/app/layout.tsx"
+  ],
+  "migration": "supabase/migrations/0003_quote_workspace.sql",
+  "live_app_touched": false,
+  "production_credentials_included": false
+}

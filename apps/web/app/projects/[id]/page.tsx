@@ -2,15 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "../../../components/app-shell";
 import { PageHeader } from "../../../components/page-header";
+import { formatMoney } from "../../../lib/format";
 import { createServerSupabaseClient } from "../../../lib/supabase/server";
-
-function money(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0
-  }).format(value);
-}
 
 export default async function ProjectDetailPage({
   params
@@ -79,7 +72,7 @@ export default async function ProjectDetailPage({
       <section className="metric-grid project-metrics">
         <article className="metric-card">
           <span>Project Total</span>
-          <strong>{money(projectTotal)}</strong>
+          <strong>{formatMoney(projectTotal)}</strong>
           <p>Current versions of active quotes</p>
         </article>
         <article className="metric-card">
@@ -126,11 +119,17 @@ export default async function ProjectDetailPage({
                 const version = quote.current_version_id ? versionMap.get(quote.current_version_id) : null;
                 return (
                   <tr key={quote.id}>
-                    <td className="mono">{quote.quote_number}</td>
-                    <td><strong>{quote.name}</strong></td>
+                    <td className="mono">
+                      <Link className="table-link" href={`/quotes/${quote.id}`}>{quote.quote_number}</Link>
+                    </td>
+                    <td>
+                      <Link className="table-link" href={`/quotes/${quote.id}`}>
+                        <strong>{quote.name}</strong>
+                      </Link>
+                    </td>
                     <td>{version?.displayVersion ?? "0.0"}</td>
                     <td><span className="status status-neutral">{quote.status.replaceAll("_", " ")}</span></td>
-                    <td className="numeric"><strong>{money(version?.sell ?? 0)}</strong></td>
+                    <td className="numeric"><strong>{formatMoney(version?.sell ?? 0)}</strong></td>
                   </tr>
                 );
               })}

@@ -1,14 +1,8 @@
+import Link from "next/link";
 import { AppShell } from "../../components/app-shell";
 import { PageHeader } from "../../components/page-header";
+import { formatMoney } from "../../lib/format";
 import { createServerSupabaseClient } from "../../lib/supabase/server";
-
-function money(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0
-  }).format(value);
-}
 
 export default async function QuotesPage() {
   const supabase = await createServerSupabaseClient();
@@ -77,12 +71,18 @@ export default async function QuotesPage() {
 
                 return (
                   <tr key={quote.id}>
-                    <td className="mono">{quote.quote_number}</td>
+                    <td className="mono">
+                      <Link className="table-link" href={`/quotes/${quote.id}`}>{quote.quote_number}</Link>
+                    </td>
                     <td>{projectMap.get(quote.project_id) ?? "—"}</td>
-                    <td><strong>{quote.name}</strong></td>
+                    <td>
+                      <Link className="table-link" href={`/quotes/${quote.id}`}>
+                        <strong>{quote.name}</strong>
+                      </Link>
+                    </td>
                     <td>{version?.displayVersion ?? "0.0"}</td>
                     <td><span className="status status-neutral">{quote.status.replaceAll("_", " ")}</span></td>
-                    <td className="numeric"><strong>{money(version?.sell ?? 0)}</strong></td>
+                    <td className="numeric"><strong>{formatMoney(version?.sell ?? 0)}</strong></td>
                   </tr>
                 );
               })}
