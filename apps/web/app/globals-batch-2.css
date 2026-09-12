@@ -1,0 +1,114 @@
+/*
+  Batch 2 helper styles.
+  These rules can be merged into globals.css later. Keeping them separate in
+  this batch avoids replacing the large Batch 1 stylesheet.
+*/
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background:
+    radial-gradient(circle at top left, rgba(75, 102, 35, 0.08), transparent 34%),
+    #F9FAFB;
+}
+
+.login-card {
+  width: min(440px, 100%);
+  background: #FFFFFF;
+  border: 1px solid #D9DEE7;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 18px 50px rgba(16, 24, 40, 0.10);
+}
+
+.login-brand {
+  color: #1F2937;
+  padding: 0 0 20px;
+  border-color: #E8EBF0;
+}
+
+.login-brand span {
+  color: #667085;
+}
+
+.login-copy {
+  margin: 24px 0 20px;
+}
+
+.login-copy h1 {
+  margin: 5px 0 8px;
+  color: #1F2937;
+  font-size: 28px;
+  letter-spacing: -0.035em;
+}
+
+.login-copy p {
+  margin: 0;
+  color: #667085;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.config-warning {
+  margin: 0 0 18px;
+  padding: 12px 13px;
+  border-radius: 8px;
+  border: 1px solid #E8D7AE;
+  background: #FFF9EC;
+}
+
+.config-warning strong {
+  display: block;
+  color: #795000;
+  font-size: 11px;
+}
+
+.config-warning p {
+  margin: 4px 0 0;
+  color: #8C650E;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.login-form {
+  display: grid;
+  gap: 14px;
+}
+
+.login-form label {
+  display: grid;
+  gap: 6px;
+  color: #344054;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.login-form input {
+  height: 39px;
+  border-radius: 8px;
+  border: 1px solid #D9DEE7;
+  padding: 0 11px;
+  color: #253044;
+  background: #FFFFFF;
+  outline: none;
+}
+
+.login-form input:focus {
+  border-color: #9BAE80;
+  box-shadow: 0 0 0 3px rgba(75, 102, 35, 0.10);
+}
+
+.login-form .primary-button {
+  margin-top: 4px;
+}
+
+.form-message {
+  border: 1px solid #F1C6C1;
+  background: #FFF4F2;
+  color: #9F261C;
+  border-radius: 8px;
+  padding: 10px 11px;
+  font-size: 11px;
+}

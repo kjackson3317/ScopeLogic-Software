@@ -1,0 +1,23 @@
+{
+  "batch": "ScopeLogic Software Alpha 1 - Batch 2",
+  "purpose": "Isolated Supabase/data/auth foundation",
+  "replace_existing": [
+    ".env.example",
+    "apps/web/package.json",
+    "apps/web/app/layout.tsx"
+  ],
+  "new_files": [
+    "README-BATCH-2.md",
+    "apps/web/app/api/health/route.ts",
+    "apps/web/app/globals-batch-2.css",
+    "apps/web/app/login/page.tsx",
+    "apps/web/lib/supabase/client.ts",
+    "apps/web/lib/supabase/config.ts",
+    "apps/web/lib/supabase/server.ts",
+    "supabase/ALPHA-SETUP-CHECKLIST.md",
+    "supabase/README.md",
+    "supabase/migrations/0001_alpha_foundation.sql"
+  ],
+  "live_app_touched": false,
+  "production_credentials_included": false
+}
