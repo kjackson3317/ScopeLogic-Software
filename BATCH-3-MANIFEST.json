@@ -1,0 +1,15 @@
+{
+  "batch": "ScopeLogic Software Alpha 1 - Batch 3",
+  "purpose": "Authenticated live Company \u2192 Customer \u2192 Project \u2192 Quote flow",
+  "replace_existing": [
+    "apps/web/app/layout.tsx",
+    "apps/web/app/page.tsx",
+    "apps/web/app/projects/page.tsx",
+    "apps/web/app/quotes/page.tsx",
+    "apps/web/app/crm/page.tsx",
+    "apps/web/components/app-shell.tsx",
+    "apps/web/components/page-header.tsx"
+  ],
+  "migration": "supabase/migrations/0002_live_project_quote_flow.sql",
+  "live_app_touched": false
+}
