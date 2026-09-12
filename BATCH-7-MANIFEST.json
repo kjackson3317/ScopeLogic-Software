@@ -1,0 +1,6 @@
+{
+  "batch": 7,
+  "migration": "supabase/migrations/0006_document_portal.sql",
+  "extra_step": "Apply migration after upload; storage bucket is created by migration",
+  "live_app_touched": false
+}

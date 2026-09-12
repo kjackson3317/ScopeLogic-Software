@@ -1,0 +1,6 @@
+{
+  "batch": 8,
+  "migration": "supabase/migrations/0007_proposals_branding.sql",
+  "extra_step": "Apply migration after upload",
+  "live_app_touched": false
+}

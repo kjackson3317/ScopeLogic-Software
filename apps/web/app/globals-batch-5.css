@@ -1,0 +1,4 @@
+.labor-schedule-panel { margin-bottom: 16px; }
+
+.inline-data-form{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:14px 16px;border-top:1px solid #D9DEE7}
+.inline-data-form input{height:36px;border:1px solid #D9DEE7;border-radius:8px;padding:0 10px;background:#fff}

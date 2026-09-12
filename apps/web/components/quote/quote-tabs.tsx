@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const tabs = [
   ["Estimate", ""],
+  ["Quantities", "/quantities"],
   ["Scope", "/scope"],
   ["Alternates", "/alternates"],
   ["Proposal", "/proposal"],
@@ -13,23 +14,18 @@ export function QuoteTabs({
   active
 }: {
   quoteId: string;
-  active: "estimate" | "scope" | "alternates" | "proposal" | "history";
+  active: "estimate" | "quantities" | "scope" | "alternates" | "proposal" | "history";
 }) {
-  const activeLabel = active === "estimate"
-    ? "Estimate"
-    : active.charAt(0).toUpperCase() + active.slice(1);
-
   return (
     <nav className="quote-tabs" aria-label="Quote workspace">
-      {tabs.map(([label, suffix]) => (
-        <Link
-          className={label === activeLabel ? "quote-tab active" : "quote-tab"}
+      {tabs.map(([label, suffix]) => {
+        const key = label.toLowerCase() as typeof active;
+        return <Link
+          className={key === active ? "quote-tab active" : "quote-tab"}
           href={`/quotes/${quoteId}${suffix}`}
           key={label}
-        >
-          {label}
-        </Link>
-      ))}
+        >{label}</Link>;
+      })}
     </nav>
   );
 }

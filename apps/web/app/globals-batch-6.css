@@ -1,0 +1,5 @@
+.inline-data-form{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 16px;border-top:1px solid #D9DEE7}
+.inline-data-form input,.inline-data-form select{height:36px;border:1px solid #D9DEE7;border-radius:8px;background:#fff;color:#253044;padding:0 10px;font-size:11px}
+.rules-results-panel{margin-top:16px}
+
+.rule-result-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.rule-result-actions select{height:34px;border:1px solid #D9DEE7;border-radius:7px;background:#fff;padding:0 7px;font-size:10px}

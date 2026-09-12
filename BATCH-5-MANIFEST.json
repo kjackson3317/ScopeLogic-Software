@@ -1,0 +1,6 @@
+{
+  "batch": 5,
+  "migration": "supabase/migrations/0004_catalog_pricing_labor.sql",
+  "extra_step": "Apply migration after upload",
+  "live_app_touched": false
+}
