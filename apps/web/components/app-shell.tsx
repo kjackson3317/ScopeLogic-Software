@@ -1,25 +1,25 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { getAlphaAppContext } from "../lib/auth/app-context";
 import { SetupRequired } from "./setup-required";
+import { SidebarNavigation } from "./sidebar-navigation";
 
 type NavItem = {
   label: string;
   href: string;
-  short: string;
+  icon: "home" | "projects" | "documents" | "quotes" | "rules" | "crm" | "reports" | "admin";
   module?: string;
 };
 
 const navigation: NavItem[] = [
-  { label: "Home", href: "/", short: "HM" },
-  { label: "Projects", href: "/projects", short: "PR" },
-  { label: "Documents", href: "/documents", short: "DC" },
-  { label: "Quotes", href: "/quotes", short: "QT", module: "quote" },
-  { label: "Rules Engine", href: "/rules-engine", short: "RE", module: "rules" },
-  { label: "CRM", href: "/crm", short: "CR" },
-  { label: "Reports", href: "/reports", short: "RP" },
-  { label: "Administration", href: "/administration", short: "AD" }
+  { label: "Home", href: "/", icon: "home" },
+  { label: "Projects", href: "/projects", icon: "projects" },
+  { label: "Documents", href: "/documents", icon: "documents" },
+  { label: "Quotes", href: "/quotes", icon: "quotes", module: "quote" },
+  { label: "Rules Engine", href: "/rules-engine", icon: "rules", module: "rules" },
+  { label: "CRM", href: "/crm", icon: "crm" },
+  { label: "Reports", href: "/reports", icon: "reports" },
+  { label: "Administration", href: "/administration", icon: "admin" }
 ];
 
 export async function AppShell({ children }: { children: ReactNode }) {
@@ -52,21 +52,18 @@ export async function AppShell({ children }: { children: ReactNode }) {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark" aria-label="ScopeLogic temporary logo mark">S</div>
+          <img
+            className="brand-logo"
+            src="/brand/scopelogic-software-4c-mark.svg"
+            alt="ScopeLogic Software"
+          />
           <div>
             <strong>ScopeLogic</strong>
-            <span>Software Alpha</span>
+            <span>Software · Alpha</span>
           </div>
         </div>
 
-        <nav className="sidebar-nav" aria-label="Primary">
-          {visibleNavigation.map((item) => (
-            <Link href={item.href} className="nav-link" key={item.href}>
-              <span className="nav-icon" aria-hidden="true">{item.short}</span>
-              <span>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
+        <SidebarNavigation items={visibleNavigation} />
 
         <div className="sidebar-footer">
           <div className="alpha-badge">ALPHA</div>
