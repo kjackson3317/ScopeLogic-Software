@@ -8,9 +8,10 @@ import "./globals-batch-7.css";
 import "./globals-batch-8.css";
 import "./globals-batch-9.css";
 import "./globals-shell-fix.css";
+import "./globals-commercial-ui.css";
 
 export const metadata: Metadata = {
-  title: { default: "ScopeLogic", template: "%s | ScopeLogic" },
+  title: { default: "ScopeLogic Software", template: "%s | ScopeLogic Software" },
   description: "Construction estimating and preconstruction software."
 };
 
