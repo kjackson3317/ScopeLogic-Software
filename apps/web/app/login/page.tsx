@@ -43,10 +43,14 @@ export default function LoginPage() {
     <main className="login-page">
       <section className="login-card">
         <div className="brand login-brand">
-          <div className="brand-mark" aria-label="ScopeLogic temporary logo mark">S</div>
+          <img
+            className="brand-logo"
+            src="/brand/scopelogic-software-4c-mark.svg"
+            alt="ScopeLogic Software"
+          />
           <div>
             <strong>ScopeLogic</strong>
-            <span>Software Alpha</span>
+            <span>Software · Alpha</span>
           </div>
         </div>
 
