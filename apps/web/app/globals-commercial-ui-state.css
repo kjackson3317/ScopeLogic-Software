@@ -1,0 +1,19 @@
+.nav-link.active {
+  background: rgba(75,102,35,.72);
+  color: #fff;
+  box-shadow: inset 3px 0 0 #90aa67;
+}
+
+.nav-link.active .nav-icon {
+  color: #fff;
+}
+
+.nav-link:focus-visible,
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.text-button:focus-visible,
+.icon-button:focus-visible,
+.account-button:focus-visible {
+  outline: 2px solid #9bae80;
+  outline-offset: 2px;
+}
