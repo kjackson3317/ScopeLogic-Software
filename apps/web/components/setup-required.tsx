@@ -2,7 +2,11 @@ export function SetupRequired() {
   return (
     <main className="setup-page">
       <section className="setup-card">
-        <div className="brand-mark">S</div>
+        <img
+          className="brand-logo setup-logo"
+          src="/brand/scopelogic-software-4c-mark.svg"
+          alt="ScopeLogic Software"
+        />
         <p className="section-kicker">ScopeLogic Software Alpha</p>
         <h1>Alpha database setup required</h1>
         <p>
