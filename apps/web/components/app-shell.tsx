@@ -16,6 +16,7 @@ const navigation: NavItem[] = [
   { label: "Projects", href: "/projects", icon: "projects" },
   { label: "Documents", href: "/documents", icon: "documents" },
   { label: "Quotes", href: "/quotes", icon: "quotes", module: "quote" },
+  { label: "Quote Templates", href: "/quote-templates", icon: "quotes", module: "quote" },
   { label: "Rules Engine", href: "/rules-engine", icon: "rules", module: "rules" },
   { label: "CRM", href: "/crm", icon: "crm" },
   { label: "Reports", href: "/reports", icon: "reports" },
