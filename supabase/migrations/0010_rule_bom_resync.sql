@@ -45,7 +45,7 @@ begin
 
  -- Lookup uses the rule lineage, not just a particular result ID.
  -- It also finds rule-derived lines copied into a new quote revision.
- select count(*), max(el.id) into matched_lines, target_line
+ select count(*) into matched_lines
  from public.estimate_lines el
  join public.rule_results previous on previous.id=el.source_id
  where el.quote_version_id=version_id and el.quote_id=quote_id_input
@@ -56,7 +56,11 @@ begin
  end if;
 
  if matched_lines = 1 then
-   select source_id into old_source_id from public.estimate_lines where id=target_line;
+   select el.id, el.source_id into target_line, old_source_id
+   from public.estimate_lines el
+   join public.rule_results previous on previous.id=el.source_id
+   where el.quote_version_id=version_id and el.quote_id=quote_id_input
+     and el.source_type='rule' and previous.rule_id=result_row.rule_id;
    update public.estimate_lines
    set section_id=section_id_input, source_id=result_row.id,
        catalog_item_id=item_row.id,
