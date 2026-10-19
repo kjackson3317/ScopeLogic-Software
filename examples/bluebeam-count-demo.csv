@@ -1,7 +1,10 @@
-Subject,Page Label,Count
-D-DATA,LV-101,1
-D-DATA,LV-101,1
-D-DATA,LV-102,1
-CAM-IP,SEC-101,1
-CAM-IP,SEC-101,1
-ACS-DOOR,SEC-101,1
+Subject,Color,Label,Device Code,Page Label,Count
+Rectangle,#2563EB,,D-DATA,LV-101,
+Rectangle,#2563EB,,D-DATA,LV-101,
+Rectangle,#2563EB,,D-DATA,LV-102,
+Ellipse,#DC2626,Smoke Detector,FA-SMK,FA-101,
+Ellipse,#DC2626,Smoke Detector,FA-SMK,FA-101,
+Polygon,#16A34A,Triangle Data,LV-TRI,LV-101,
+Polygon,#16A34A,Diamond Camera,SEC-DIA,SEC-101,
+Count,#D97706,Pull Station,FA-PULL,FA-101,4
+Callout,#000000,Designer Note,,LV-101,
