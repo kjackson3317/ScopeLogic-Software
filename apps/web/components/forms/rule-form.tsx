@@ -37,7 +37,11 @@ export function RuleForm({ catalogItems }: { catalogItems: {id:string;descriptio
     <div className="field-grid">
       <label>Rule Name<input value={name} onChange={e=>setName(e.target.value)} required /></label>
       <label>Category<input value={category} onChange={e=>setCategory(e.target.value)} /></label>
-      <label>Input Key<input value={inputKey} onChange={e=>setInputKey(e.target.value)} placeholder="single_data_outlet" required /></label>
+      <label>Symbol ID / Input Key
+        <input value={inputKey} onChange={e=>setInputKey(e.target.value.toUpperCase())}
+          placeholder="SC-DATA-2P" required />
+        <small>For new Bluebeam takeoff tools, match the Subject exactly: SYSTEM-DEVICE[-VARIANT].</small>
+      </label>
       <label>Input Label<input value={inputLabel} onChange={e=>setInputLabel(e.target.value)} placeholder="Single Data Outlet" required /></label>
       <label>Factor<input type="number" step="0.0001" value={factor} onChange={e=>setFactor(e.target.value)} /></label>
       <label>Waste %<input type="number" step="0.01" value={waste} onChange={e=>setWaste(e.target.value)} /></label>
@@ -47,7 +51,9 @@ export function RuleForm({ catalogItems }: { catalogItems: {id:string;descriptio
       </select></label>
       <label>Output Unit<input value={outputUnit} onChange={e=>setOutputUnit(e.target.value.toUpperCase())} /></label>
       <label className="span-2">Output Label<input value={outputLabel} onChange={e=>setOutputLabel(e.target.value)} required /></label>
-      <label className="span-2">Catalog Item for Recommendation<select value={catalogItemId} onChange={e=>setCatalogItemId(e.target.value)}>
+      <label className="span-2">Catalog Item for Recommendation
+        <small>Demo limitation: a rule currently recommends one catalog item. Multi-component assembly expansion is still being developed.</small>
+        <select value={catalogItemId} onChange={e=>setCatalogItemId(e.target.value)}>
         <option value="">No catalog item</option>
         {catalogItems.map(i=><option value={i.id} key={i.id}>{[i.part_number,i.description].filter(Boolean).join(" · ")}</option>)}
       </select></label>
