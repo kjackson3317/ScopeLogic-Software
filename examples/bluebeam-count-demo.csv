@@ -1,10 +1,9 @@
-Subject,Color,Label,Device Code,Page Label,Count
-Rectangle,#2563EB,,D-DATA,LV-101,
-Rectangle,#2563EB,,D-DATA,LV-101,
-Rectangle,#2563EB,,D-DATA,LV-102,
-Ellipse,#DC2626,Smoke Detector,FA-SMK,FA-101,
-Ellipse,#DC2626,Smoke Detector,FA-SMK,FA-101,
-Polygon,#16A34A,Triangle Data,LV-TRI,LV-101,
-Polygon,#16A34A,Diamond Camera,SEC-DIA,SEC-101,
-Count,#D97706,Pull Station,FA-PULL,FA-101,4
-Callout,#000000,Designer Note,,LV-101,
+Subject,Color,Label,Page Label,Count
+SC-DATA-2P,#2563EB,Two-Port Data Outlet,LV-101,
+SC-DATA-2P,#2563EB,Two-Port Data Outlet,LV-101,
+SC-DATA-2P,#2563EB,Two-Port Data Outlet,LV-102,
+CCTV-CAM-DOME,#16A34A,Dome Camera,SEC-101,
+CCTV-CAM-DOME,#16A34A,Dome Camera,SEC-101,
+ACS-DR-1R,#D97706,Single-Reader Door,SEC-101,
+FA-PULL,#DC2626,Manual Pull Station,FA-101,4
+Designer Note,#000000,Review coordinate,LV-101,
