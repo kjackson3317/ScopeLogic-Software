@@ -20,14 +20,37 @@ create policy bluebeam_import_batches_select on public.bluebeam_import_batches
   for select to authenticated using (private.can_access_quote(quote_id));
 grant select on public.bluebeam_import_batches to authenticated;
 
+-- Organization-owned import mappings survive across quotes and projects.
+create table if not exists public.bluebeam_symbol_mappings (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references public.organizations(id) on delete cascade,
+  source_key text not null,
+  subject text not null,
+  color text not null default '',
+  label text not null default '',
+  shape text not null default '',
+  device_code text not null default '',
+  input_key text,
+  excluded boolean not null default false,
+  updated_at timestamptz not null default now(),
+  unique(organization_id,source_key),
+  check (excluded or length(btrim(coalesce(input_key,''))) > 0)
+);
+alter table public.bluebeam_symbol_mappings enable row level security;
+create policy bluebeam_symbol_mappings_select on public.bluebeam_symbol_mappings
+  for select to authenticated using (private.is_active_org_member(organization_id));
+grant select on public.bluebeam_symbol_mappings to authenticated;
+
 create or replace function public.apply_bluebeam_quantity_snapshot(
-  quote_id_input uuid, filename_input text, inputs_input jsonb
+  quote_id_input uuid, filename_input text, inputs_input jsonb, mappings_input jsonb
 ) returns uuid language plpgsql security definer set search_path = ''
 as $$
 declare
   org_id uuid; version_id uuid; import_id uuid;
   item jsonb; item_key text; item_label text; item_value numeric;
   seen_keys text[] := array[]::text[]; total_value numeric := 0;
+  seen_source_keys text[] := array[]::text[];
+  source_key text; source_input_key text; excluded_input boolean;
 begin
   select organization_id, current_version_id into org_id, version_id
   from public.quotes where id = quote_id_input for update;
@@ -42,6 +65,10 @@ begin
   end if;
   if length(btrim(coalesce(filename_input,''))) not between 1 and 255 then
     raise exception 'Source filename required';
+  end if;
+  if jsonb_typeof(mappings_input) is distinct from 'array' or
+     jsonb_array_length(mappings_input) not between 1 and 1000 then
+     raise exception 'Symbol mappings required';
   end if;
   for item in select value from jsonb_array_elements(inputs_input) as t(value) loop
     item_key := btrim(coalesce(item->>'inputKey',''));
@@ -78,6 +105,44 @@ begin
     );
   end loop;
 
+  -- Persist mappings in the same transaction as the draft quantity snapshot.
+  for item in select value from jsonb_array_elements(mappings_input) as t(value) loop
+    source_key := btrim(coalesce(item->>'sourceKey',''));
+    source_input_key := nullif(btrim(coalesce(item->>'inputKey','')), '');
+    if jsonb_typeof(item->'excluded') is distinct from 'boolean' then
+      raise exception 'Explicit mapping exclusion flag required';
+    end if;
+    excluded_input := (item->>'excluded')::boolean;
+    if length(source_key) not between 1 and 1024 or source_key = any(seen_source_keys) or
+       length(coalesce(item->>'subject','')) not between 1 and 255 or
+       length(coalesce(item->>'color','')) > 255 or
+       length(coalesce(item->>'label','')) > 255 or
+       length(coalesce(item->>'shape','')) > 255 or
+       length(coalesce(item->>'deviceCode','')) > 255 or
+       (not excluded_input and source_input_key is null) or
+       (excluded_input and source_input_key is not null) then
+      raise exception 'Invalid or repeated Bluebeam symbol mapping';
+    end if;
+    if source_input_key is not null and not exists (
+      select 1 from jsonb_array_elements(inputs_input) as t(value)
+      where t.value->>'inputKey' = source_input_key
+    ) then
+      raise exception 'Mapped input does not exist in import snapshot';
+    end if;
+    seen_source_keys := array_append(seen_source_keys, source_key);
+    insert into public.bluebeam_symbol_mappings(
+      organization_id,source_key,subject,color,label,shape,device_code,input_key,excluded
+    ) values (
+      org_id,source_key,btrim(item->>'subject'),
+      coalesce(item->>'color',''),coalesce(item->>'label',''),
+      coalesce(item->>'shape',''),coalesce(item->>'deviceCode',''),
+      source_input_key,excluded_input
+    ) on conflict(organization_id,source_key) do update set
+      subject=excluded.subject,color=excluded.color,label=excluded.label,
+      shape=excluded.shape,device_code=excluded.device_code,
+      input_key=excluded.input_key,excluded=excluded.excluded,updated_at=now();
+  end loop;
+
   insert into public.bluebeam_import_batches(
     organization_id, quote_id, quote_version_id, source_filename,
     input_count, total_count, imported_by_user_id
@@ -96,8 +161,8 @@ begin
   return import_id;
 end
 $$;
-revoke all on function public.apply_bluebeam_quantity_snapshot(uuid,text,jsonb) from public;
-grant execute on function public.apply_bluebeam_quantity_snapshot(uuid,text,jsonb) to authenticated;
+revoke all on function public.apply_bluebeam_quantity_snapshot(uuid,text,jsonb,jsonb) from public;
+grant execute on function public.apply_bluebeam_quantity_snapshot(uuid,text,jsonb,jsonb) to authenticated;
 
 -- Deterministic input precedence: Bluebeam wins for matching rule keys.
 -- Manual records remain available without being summed with imported values.
