@@ -102,15 +102,18 @@ export function BluebeamImport({
           <p className="section-kicker">Bluebeam connection · CSV mode</p>
           <h2>Import Count Takeoff</h2>
           <p className="page-description">
-            Export a CSV Markups List summary from Revu. Match each Bluebeam Subject to
-            an existing ScopeLogic rule input, review the changes, then apply.
+            Export a CSV Markups List summary from Revu using Markups only,
+            with Subject and Count columns. Match Bluebeam Subjects to ScopeLogic rule inputs,
+            review quantity changes, then apply.
           </p>
         </div>
       </div>
       <div className="inline-note">
-        Only count-based symbols are supported in this demonstration. Each markup counts
-        as one unless Bluebeam exports a numeric Count column. Length, area, and volume
-        require a separate measurement mapping. ScopeLogic alone defines assemblies and parts.
+        Only Count Tool measurements are supported in this demonstration. Count must
+        be included in the CSV because one markup row can represent a group of multiple
+        placements. Other annotation rows with no Count value are ignored.
+        Export Markups only (not Markups &amp; Totals) to avoid double-counting.
+        Length, area, and volume require a separate measurement mapping.
       </div>
       <div className="inline-data-form">
         <label htmlFor="bluebeam-csv">Bluebeam CSV summary</label>
@@ -123,7 +126,7 @@ export function BluebeamImport({
           <p className="page-description">
             {filename}: {parsed.markupRows.toLocaleString()} markup rows,
             {parsed.symbols.length} unique Subjects.
-            {parsed.hasCountColumn ? " Numeric Count column detected." : " Each row counted once."}
+            {" Count values validated."}
           </p>
           <div className="table-wrap">
             <table className="data-table">
