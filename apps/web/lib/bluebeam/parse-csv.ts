@@ -41,13 +41,16 @@ export function parseBluebeamCountCsv(text: string): BluebeamParseResult {
   const subjectIndex = headers.indexOf("subject");
   const countIndex = headers.findIndex(header => header === "count" || header === "totalcount");
   if (subjectIndex < 0) throw new Error("Bluebeam export must include a Subject column.");
+  if (countIndex < 0) throw new Error("Bluebeam Count Tool export must include the Count column. A count group may contain multiple placements; one markup row is not necessarily one device.");
   const tally = new Map<string, BluebeamSymbol>();
   let markupRows = 0;
   for (const row of rows.slice(1)) {
     const subject = (row[subjectIndex] ?? "").trim();
     if (!subject || /^(total|totals|grand total)$/i.test(subject)) continue;
-    const rawCount = countIndex >= 0 ? (row[countIndex] ?? "").trim() : "";
-    const count = rawCount ? Number(rawCount.replace(/,/g, "")) : 1;
+    const rawCount = (row[countIndex] ?? "").trim();
+    // Non-count markups have no Count measurement. Ignore them, never count them as one.
+    if (!rawCount) continue;
+    const count = Number(rawCount.replace(/,/g, ""));
     if (!Number.isFinite(count) || !Number.isInteger(count) || count < 0) {
       throw new Error("Invalid count for subject: " + subject);
     }
@@ -62,6 +65,6 @@ export function parseBluebeamCountCsv(text: string): BluebeamParseResult {
     });
   }
   const symbols = Array.from(tally.values()).sort((a, b) => a.subject.localeCompare(b.subject));
-  if (!symbols.length) throw new Error("No nonzero count markups were found.");
+  if (!symbols.length) throw new Error("No Count Tool quantities were found. Export Markups (not Totals), including the Count column.");
   return { symbols, markupRows, hasCountColumn: countIndex >= 0 };
 }
