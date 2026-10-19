@@ -3,16 +3,13 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { parseBluebeamMarkupCsv, type BluebeamParseResult } from "../../lib/bluebeam/parse-csv";
+import { getMarkupSymbolId } from "../../lib/bluebeam/symbol-id";
 
 type RuleInput = { inputKey: string; label: string };
 type ExistingInput = { input_key: string; value: number; source_type: string };
 type SavedMapping = { source_key: string; input_key: string | null; excluded: boolean };
 type MappedInput = { inputKey: string; label: string; value: number; unit: "EA" };
 const EXCLUDE = "__exclude__";
-
-function normalized(value: string) {
-  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
-}
 
 export function BluebeamImport({
   quoteId, rules, existing, savedMappings, isDraft
@@ -59,6 +56,9 @@ export function BluebeamImport({
     /^(polygon|polyline)$/i.test(s.subject) && !s.label && !s.shape && !s.deviceCode
   ) ?? [];
   const excludedSymbols = parsed?.symbols.filter(s => mapping[s.key] === EXCLUDE) ?? [];
+  const invalidCodes = parsed?.symbols.filter(s =>
+    !getMarkupSymbolId(s) && mapping[s.key] !== EXCLUDE
+  ) ?? [];
 
   async function load(file: File | undefined) {
     setParsed(null); setMapping({}); setApproved(false); setGenericVerified(false); setError(""); setSuccess("");
@@ -80,11 +80,9 @@ export function BluebeamImport({
             continue;
           }
         }
-        const names = [symbol.deviceCode, symbol.label, symbol.subject]
-          .filter(Boolean).map(normalized);
-        const auto = rules.find(rule =>
-          names.includes(normalized(rule.inputKey)) || names.includes(normalized(rule.label))
-        );
+        // A properly named ScopeLogic Subject resolves without color/shape guesswork.
+        const symbolId = getMarkupSymbolId(symbol);
+        const auto = symbolId && rules.find(rule => rule.inputKey.toUpperCase() === symbolId);
         if (auto) detected[symbol.key] = auto.inputKey;
       }
       setMapping(detected);
@@ -134,6 +132,8 @@ export function BluebeamImport({
         </div>
       </div>
       <div className="inline-note">
+        Name each new Tool Chest symbol by placing its permanent ScopeLogic ID
+        (for example SC-DATA-2P) in Bluebeam's Subject property.
         Ordinary custom shape markups count as one device per markup row.
         Actual Count Tool entries use their numeric Count measurement, when present.
         Shape and color alone may not distinguish two different polygon designs:
@@ -160,6 +160,11 @@ export function BluebeamImport({
           {parsed.missingSubjects > 0 && <p className="inline-error">
             {parsed.missingSubjects} rows had no Subject and were not counted. Inspect the source export.
           </p>}
+          {invalidCodes.length > 0 && <p className="inline-error">
+            {invalidCodes.length} non-excluded symbol signatures do not have a standard
+            ScopeLogic ID in Subject or Device Code. They require manual mapping;
+            update the new Tool Chest library to use SYSTEM-DEVICE[-VARIANT] in Subject.
+          </p>}
           {genericPolygons.length > 0 && <p className="inline-error">
             {genericPolygons.length} polygon signature(s) have no unique Label, Shape or Device Code.
             Triangle and diamond markups may be indistinguishable in this CSV if they
@@ -170,15 +175,15 @@ export function BluebeamImport({
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>Subject / shape</th><th>Line color</th><th>Label / device code</th>
+                  <th>ScopeLogic Symbol ID / Shape</th><th>Line color</th><th>Label / device code</th>
                   <th className="numeric">Qty</th><th>ScopeLogic rule input</th>
                 </tr>
               </thead>
               <tbody>
                 {parsed.symbols.map(symbol => (
                   <tr key={symbol.key}>
-                    <td><strong>{symbol.shape || symbol.subject}</strong>
-                      {symbol.shape && symbol.subject !== symbol.shape ? <small> · {symbol.subject}</small> : null}</td>
+                    <td><strong>{getMarkupSymbolId(symbol) ?? symbol.subject}</strong>
+                      {symbol.shape ? <small> · {symbol.shape}</small> : null}</td>
                     <td>{symbol.color || "—"}</td>
                     <td>{[symbol.label,symbol.deviceCode].filter(Boolean).join(" · ") || "—"}</td>
                     <td className="numeric">{symbol.count.toLocaleString()}</td>
