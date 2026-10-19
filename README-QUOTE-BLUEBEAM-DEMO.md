@@ -16,9 +16,13 @@ to avoid a destructive rewrite; they are not part of this demonstration.
 
 1. Open a sample drawing in Bluebeam Revu (suitable subscription required).
 2. Place count markups; use consistent Subject names such as D-DATA or CAM-IP.
-3. In Markups List choose Summary > CSV; include Subject and, if available,
-   Count. Export as .csv. The importer does not read arbitrary length/area
-   measurements or OCR the drawing.
+3. In Markups List choose Summary > CSV; include Subject and Count
+   (mandatory), and choose **Markups only**, NOT "Markups & Totals".
+   Use Markups List filters and "Exclude Filtered Markups" to omit markup
+   classes unrelated to estimating. Export as .csv. An individual Count
+   markup row can represent multiple placements; the Count value, not the
+   number of rows, is the quantity. Rows without Count are ignored.
+   The importer does not read arbitrary length/area measurements or OCR.
 4. In ScopeLogic create a customer and a project (only if no demo record exists).
 5. Create a Quote and its initial 0.0 version.
 6. In Parts Database, create the needed catalog items.
@@ -48,8 +52,8 @@ to avoid a destructive rewrite; they are not part of this demonstration.
 ## Bluebeam test assertions
 
 - No source file = no import.
-- Missing Subject column, invalid counts, malformed quotes and empty files fail.
-- Quoted CSV Subjects and repeated symbols group correctly.
+- Missing Subject/Count columns, invalid counts, malformed quotes and empty files fail.
+- Quoted CSV Subjects, repeated symbols and grouped Count placements add correctly.
 - Unmapped Subjects block Apply.
 - Two Subjects mapped to the same Rule input are summed once.
 - Existing Bluebeam inputs absent from the new reviewed file are removed.
