@@ -12,14 +12,9 @@ type NavItem = {
 };
 
 const navigation: NavItem[] = [
-  { label: "Home", href: "/", short: "HM" },
-  { label: "Projects", href: "/projects", short: "PR" },
-  { label: "Documents", href: "/documents", short: "DC" },
-  { label: "Quotes", href: "/quotes", short: "QT", module: "quote" },
-  { label: "Rules Engine", href: "/rules-engine", short: "RE", module: "rules" },
-  { label: "CRM", href: "/crm", short: "CR" },
-  { label: "Reports", href: "/reports", short: "RP" },
-  { label: "Administration", href: "/administration", short: "AD" }
+  { label: "Quote Builder", href: "/quotes", short: "QB", module: "quote" },
+  { label: "Parts Database", href: "/administration/catalog", short: "PD" },
+  { label: "Rule Engine", href: "/rules-engine", short: "RE", module: "rules" }
 ];
 
 export async function AppShell({ children }: { children: ReactNode }) {
@@ -55,7 +50,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
           <div className="brand-mark" aria-label="ScopeLogic temporary logo mark">S</div>
           <div>
             <strong>ScopeLogic</strong>
-            <span>Software Alpha</span>
+            <span>Quote Builder Demo</span>
           </div>
         </div>
 
@@ -69,21 +64,14 @@ export async function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="sidebar-footer">
-          <div className="alpha-badge">ALPHA</div>
+          <div className="alpha-badge">DEMO / TEST</div>
           <p>{context.organizationName}</p>
         </div>
       </aside>
 
       <div className="app-main">
         <header className="topbar">
-          <div className="topbar-search">
-            <span aria-hidden="true">⌕</span>
-            <input aria-label="Global search" placeholder="Search projects, quotes, customers..." />
-          </div>
-
           <div className="topbar-actions">
-            <button className="icon-button" type="button" aria-label="Help">?</button>
-            <button className="icon-button" type="button" aria-label="Notifications">•</button>
             <button className="account-button" type="button">
               <span className="avatar">{initials}</span>
               <span>
