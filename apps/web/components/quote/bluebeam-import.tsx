@@ -28,6 +28,7 @@ export function BluebeamImport({
   const [parsed, setParsed] = useState<BluebeamParseResult | null>(null);
   const [mapping, setMapping] = useState<Record<string, string>>({});
   const [approved, setApproved] = useState(false);
+  const [genericVerified, setGenericVerified] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -60,7 +61,7 @@ export function BluebeamImport({
   const excludedSymbols = parsed?.symbols.filter(s => mapping[s.key] === EXCLUDE) ?? [];
 
   async function load(file: File | undefined) {
-    setParsed(null); setMapping({}); setApproved(false); setError(""); setSuccess("");
+    setParsed(null); setMapping({}); setApproved(false); setGenericVerified(false); setError(""); setSuccess("");
     setFilename(file?.name ?? "");
     if (!file) return;
     if (!/\.csv$/i.test(file.name)) { setError("Choose a Revu Markups List CSV summary."); return; }
@@ -93,7 +94,7 @@ export function BluebeamImport({
   }
 
   async function apply() {
-    if (!parsed || unmapped || !snapshot.length || !approved || !isDraft) return;
+    if (!parsed || unmapped || !snapshot.length || !approved || !isDraft || !parsed.hasColorColumn || (genericPolygons.length > 0 && !genericVerified)) return;
     setBusy(true); setError(""); setSuccess("");
     const mappings = parsed.symbols.map(symbol => ({
       sourceKey: symbol.key, subject: symbol.subject, color: symbol.color,
@@ -153,7 +154,8 @@ export function BluebeamImport({
             {parsed.hasCountColumn ? " Count measurement supported." : " No Count column — one per markup row."}
           </p>
           {!parsed.hasColorColumn && <p className="inline-error">
-            Color was not exported. Re-export with the Color column if different device symbols share a Subject.
+            Color was not exported. For your shape-and-color takeoff method,
+            include the Color column before applying any quantities.
           </p>}
           {parsed.missingSubjects > 0 && <p className="inline-error">
             {parsed.missingSubjects} rows had no Subject and were not counted. Inspect the source export.
@@ -235,6 +237,13 @@ export function BluebeamImport({
             Manual input and existing BOM lines stay intact. After reimport,
             click Run Rules and explicitly accept updated BOM recommendations.
           </p>
+          {genericPolygons.length > 0 && <label className="inline-note">
+            <input type="checkbox" checked={genericVerified}
+              onChange={event => setGenericVerified(event.target.checked)} />
+            I verified that each generic Polygon / Color signature represents only one
+            device type in this file. If not, add a unique Subject, Label or Device Code
+            in Revu before importing.
+          </label>}
           <label className="inline-note">
             <input type="checkbox" checked={approved}
               onChange={event => setApproved(event.target.checked)} />
@@ -242,7 +251,7 @@ export function BluebeamImport({
           </label>
           {unmapped && <p className="inline-error">Assign or exclude every exported signature before applying.</p>}
           <button type="button" className="primary-button" onClick={() => void apply()}
-            disabled={!approved || unmapped || !snapshot.length || busy || !isDraft}>
+            disabled={!approved || unmapped || !snapshot.length || busy || !isDraft || !parsed.hasColorColumn || (genericPolygons.length > 0 && !genericVerified)}>
             {busy ? "Applying..." : "Apply Bluebeam Quantities"}
           </button>
         </>
