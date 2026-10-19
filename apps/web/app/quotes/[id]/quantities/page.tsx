@@ -17,9 +17,10 @@ export default async function QuoteQuantitiesPage({params}:{params:Promise<{id:s
     s.from("estimate_sections").select("id,name").eq("quote_version_id",q.current_version_id).order("sort_order")
   ]);
 
-  const [{data:activeRules},{data:version}] = await Promise.all([
+  const [{data:activeRules},{data:version},{data:savedMappings}] = await Promise.all([
     s.from("rules").select("current_version_id").in("status", ["draft", "published"]),
-    s.from("quote_versions").select("status").eq("id", q.current_version_id).single()
+    s.from("quote_versions").select("status").eq("id", q.current_version_id).single(),
+    s.from("bluebeam_symbol_mappings").select("source_key,input_key,excluded")
   ]);
   const versionIds = (activeRules ?? []).map(rule => rule.current_version_id).filter(Boolean);
   const {data:ruleVersions} = versionIds.length
@@ -39,7 +40,7 @@ export default async function QuoteQuantitiesPage({params}:{params:Promise<{id:s
       {!inputs?.length?<tr><td colSpan={5} className="table-empty">No quantity inputs yet.</td></tr>:null}</tbody></table></div>
       <QuantityInputForm quoteId={q.id}/>
     </section>
-    <BluebeamImport quoteId={q.id} rules={ruleInputs}
+    <BluebeamImport quoteId={q.id} rules={ruleInputs} savedMappings={savedMappings ?? []}
       existing={(inputs ?? []).map(row => ({
         input_key: row.input_key, value: Number(row.value), source_type: row.source_type
       }))} isDraft={version?.status === "draft"} />
