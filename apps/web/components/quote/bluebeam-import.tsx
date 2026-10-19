@@ -53,7 +53,8 @@ export function BluebeamImport({
   const removed = Array.from(previous.keys()).filter(key => !incoming.has(key));
   const unmapped = parsed?.symbols.some(symbol => !mapping[symbol.key]) ?? false;
   const genericPolygons = parsed?.symbols.filter(s =>
-    /^(polygon|polyline)$/i.test(s.subject) && !s.label && !s.shape && !s.deviceCode
+    /^(polygon|polyline)$/i.test(s.subject) && !getMarkupSymbolId(s) &&
+    !s.label && !s.shape && !s.deviceCode
   ) ?? [];
   const excludedSymbols = parsed?.symbols.filter(s => mapping[s.key] === EXCLUDE) ?? [];
   const invalidCodes = parsed?.symbols.filter(s =>
