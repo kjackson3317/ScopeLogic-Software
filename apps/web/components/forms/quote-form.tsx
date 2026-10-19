@@ -48,7 +48,7 @@ export function QuoteForm({
         return;
       }
 
-      router.push(`/projects/${projectId}`);
+      router.push(`/quotes/${result.quoteId}`);
       router.refresh();
     } catch {
       setMessage("Unable to create quote.");
@@ -88,6 +88,10 @@ export function QuoteForm({
         </label>
       </div>
 
+      {projects.length === 0 && <p className="inline-error">
+        No projects are available. Create a customer and project before beginning this quote.
+        <a href="/crm/customers/new"> New customer</a> · <a href="/projects/new">New project</a>
+      </p>}
       <div className="inline-note">
         New quotes begin at version <strong>0.0</strong>. The quote number and revision system remain separate.
       </div>

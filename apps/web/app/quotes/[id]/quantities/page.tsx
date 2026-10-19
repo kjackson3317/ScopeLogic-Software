@@ -5,6 +5,7 @@ import { QuantityInputForm } from "../../../../components/quote/quantity-input-f
 import { RunRulesButton } from "../../../../components/quote/run-rules-button";
 import { createServerSupabaseClient } from "../../../../lib/supabase/server";
 import { RuleResultActions } from "../../../../components/quote/rule-result-actions";
+import { BluebeamImport } from "../../../../components/quote/bluebeam-import";
 
 export default async function QuoteQuantitiesPage({params}:{params:Promise<{id:string}>}) {
   const {id}=await params; const s=await createServerSupabaseClient();
@@ -16,6 +17,18 @@ export default async function QuoteQuantitiesPage({params}:{params:Promise<{id:s
     s.from("estimate_sections").select("id,name").eq("quote_version_id",q.current_version_id).order("sort_order")
   ]);
 
+  const [{data:activeRules},{data:version}] = await Promise.all([
+    s.from("rules").select("current_version_id").in("status", ["draft", "published"]),
+    s.from("quote_versions").select("status").eq("id", q.current_version_id).single()
+  ]);
+  const versionIds = (activeRules ?? []).map(rule => rule.current_version_id).filter(Boolean);
+  const {data:ruleVersions} = versionIds.length
+    ? await s.from("rule_versions").select("input_key,input_label").in("id",versionIds)
+    : {data: []};
+  const ruleInputs = Array.from(new Map((ruleVersions ?? []).map(rule =>
+    [rule.input_key, {inputKey: rule.input_key, label: rule.input_label}]
+  )).values());
+
   return <AppShell>
     <div className="quote-workspace-header"><div><p className="section-kicker">Rules Inputs</p><h1>{q.quote_number} · {q.name}</h1></div><RunRulesButton quoteId={q.id}/></div>
     <QuoteTabs quoteId={q.id} active="quantities"/>
@@ -26,6 +39,10 @@ export default async function QuoteQuantitiesPage({params}:{params:Promise<{id:s
       {!inputs?.length?<tr><td colSpan={5} className="table-empty">No quantity inputs yet.</td></tr>:null}</tbody></table></div>
       <QuantityInputForm quoteId={q.id}/>
     </section>
+    <BluebeamImport quoteId={q.id} rules={ruleInputs}
+      existing={(inputs ?? []).map(row => ({
+        input_key: row.input_key, value: Number(row.value), source_type: row.source_type
+      }))} isDraft={version?.status === "draft"} />
     <section className="panel rules-results-panel">
       <div className="panel-heading"><div><h2>Calculated Results</h2><p className="page-description">Recommendations remain reviewable; nothing is silently committed to the BOM.</p></div></div>
       <div className="table-wrap"><table className="data-table"><thead><tr><th>Result</th><th className="numeric">Value</th><th>Unit</th><th>Behavior</th><th>Status</th><th>Action</th></tr></thead>
