@@ -1,90 +1,50 @@
+import Link from "next/link";
 import { AppShell } from "../components/app-shell";
-import { MetricCard } from "../components/metric-card";
 import { PageHeader } from "../components/page-header";
 import { getAlphaAppContext } from "../lib/auth/app-context";
 import { createServerSupabaseClient } from "../lib/supabase/server";
 
-function money(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0
-  }).format(value);
-}
-
 export default async function HomePage() {
   const context = await getAlphaAppContext();
-
-  let activeProjects = 0;
-  let quoteCount = 0;
-  let quoteSell = 0;
-  let awaitingApproval = 0;
-
+  let quotes = 0, catalog = 0, rules = 0;
   if (context.state === "ready") {
     const supabase = await createServerSupabaseClient();
-
-    const [{ count: projectCount }, { data: quotes }, { data: approvalQuotes }] = await Promise.all([
-      supabase
-        .from("projects")
-        .select("id", { count: "exact", head: true })
-        .not("status", "in", '("complete","archived")'),
-      supabase
-        .from("quotes")
-        .select("id, current_version_id"),
-      supabase
-        .from("quotes")
-        .select("id")
-        .eq("status", "internal_review")
+    const counts = await Promise.all([
+      supabase.from("quotes").select("id", { count: "exact", head: true }),
+      supabase.from("catalog_items").select("id", { count: "exact", head: true }),
+      supabase.from("rules").select("id", { count: "exact", head: true })
     ]);
-
-    activeProjects = projectCount ?? 0;
-    quoteCount = quotes?.length ?? 0;
-    awaitingApproval = approvalQuotes?.length ?? 0;
-
-    const versionIds = quotes?.map((quote) => quote.current_version_id).filter(Boolean) ?? [];
-    if (versionIds.length) {
-      const { data: versions } = await supabase
-        .from("quote_versions")
-        .select("id, final_sell_price")
-        .in("id", versionIds);
-
-      quoteSell =
-        versions?.reduce((sum, version) => sum + Number(version.final_sell_price ?? 0), 0) ?? 0;
-    }
+    quotes = counts[0].count ?? 0;
+    catalog = counts[1].count ?? 0;
+    rules = counts[2].count ?? 0;
   }
 
-  return (
-    <AppShell>
-      <PageHeader
-        eyebrow="Alpha 1"
-        title="Workspace"
-        description="Your working view of projects, quotes, pricing, and approvals."
-        action="New Project"
-        actionHref="/projects/new"
-      />
-
-      <section className="metrics" aria-label="Workspace summary">
-        <MetricCard label="Active Projects" value={String(activeProjects)} detail="Accessible to your account" />
-        <MetricCard label="Quotes In Progress" value={String(quoteCount)} detail={`${money(quoteSell)} current sell`} />
-        <MetricCard label="Awaiting Approval" value={String(awaitingApproval)} detail="Quotes in internal review" />
-        <MetricCard label="Pricing Alerts" value="—" detail="Catalog pricing arrives in Batch 5" />
+  return <AppShell>
+    <PageHeader eyebrow="ScopeLogic Demonstration" title="Quote Builder"
+      description="Takeoff counts from Bluebeam, ScopeLogic rules, centralized parts and labor, and a reviewable estimate." />
+    <section className="quote-summary-strip">
+      <article><span>Quotes</span><strong>{quotes}</strong></article>
+      <article><span>Catalog Items</span><strong>{catalog}</strong></article>
+      <article><span>Rules</span><strong>{rules}</strong></article>
+    </section>
+    <div className="content-grid">
+      <section className="panel">
+        <h2>Start a Quote</h2>
+        <p>Open an existing estimate or create a new quote for a demo project.</p>
+        <Link className="primary-button link-button" href="/quotes">Open Quote Builder</Link>
+        <p className="page-description">If needed, set up a customer and project first.</p>
+        <Link href="/projects/new">Create Project</Link>
+        <span> · </span>
+        <Link href="/crm/customers/new">Create Customer</Link>
       </section>
-
-      <div className="content-grid">
-        <section className="panel empty-state compact-empty">
-          <div className="empty-icon">PR</div>
-          <h2>Start with a real project</h2>
-          <p>Create a customer and project, then add independent quotes that roll into the project total.</p>
-          <a className="primary-button link-button" href="/projects/new">Create Project</a>
-        </section>
-
-        <section className="panel empty-state compact-empty">
-          <div className="empty-icon">QT</div>
-          <h2>Create the first quote</h2>
-          <p>Each quote receives its own number and an initial immutable version of 0.0.</p>
-          <a className="secondary-button link-button" href="/quotes/new">Create Quote</a>
-        </section>
-      </div>
-    </AppShell>
-  );
+      <section className="panel">
+        <h2>Bluebeam → ScopeLogic</h2>
+        <p>Use Revu Markups List CSV Summary in a draft quote's Quantities tab. Review Subject mapping and changes before syncing. Run rules and explicitly accept BOM recommendations.</p>
+        <p className="page-description">Bluebeam integration is count-only for this demo. Studio API integration requires Bluebeam OAuth and production approval.</p>
+        <Link href="/rules-engine">Configure Rules</Link>
+        <span> · </span>
+        <Link href="/administration/catalog">Open Parts Database</Link>
+      </section>
+    </div>
+  </AppShell>;
 }
