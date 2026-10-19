@@ -37,7 +37,7 @@ to avoid a destructive rewrite; they are not part of this demonstration.
 - Dedicated Vercel demo project with repo root configured for monorepo.
 - Isolated ScopeLogic Software Alpha Supabase project; it is NOT the
   ScopeLogic Production project.
-- Apply migrations 0001 to 0009 in the isolated Alpha project, in order.
+- Apply migrations 0001 to 0010 in the isolated Alpha project, in order.
 - Configure only isolated Alpha Supabase URL and publishable key (frontend).
 - Create a demo user/org. Keep actual customer data out of Alpha.
 - Validate that the quote and rules entitlements are enabled.
