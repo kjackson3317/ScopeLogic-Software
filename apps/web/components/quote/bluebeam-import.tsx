@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { parseBluebeamMarkupCsv, type BluebeamParseResult } from "../../lib/bluebeam/parse-csv";
 import { getMarkupSymbolId } from "../../lib/bluebeam/symbol-id";
+import { TakeoffCountTable } from "./takeoff-count-table";
 
 type RuleInput = { inputKey: string; label: string };
 type ExistingInput = { input_key: string; value: number; source_type: string };
@@ -127,14 +128,16 @@ export function BluebeamImport({
           <h2>Import Custom Symbol Takeoff</h2>
           <p className="page-description">
             Export a Markups List CSV Summary of individual markups from Revu.
-            Include Subject, Color and Label where available. An optional custom
-            Device Code column improves identification of similar shapes.
+            Use the permanent Symbol ID in the Subject property.
+            Show only the shape on the PDF; turn off Show Caption in Revu.
+            Export Subject and Count (when used), with Color and optional custom fields.
           </p>
         </div>
       </div>
       <div className="inline-note">
         Name each new Tool Chest symbol by placing its permanent ScopeLogic ID
-        (for example SC-DATA-2P) in Bluebeam's Subject property.
+        (for example SC-DATA-2P) in its Subject property, not as drawing text.
+        Symbol details and totals belong in the bottom count table.
         Ordinary custom shape markups count as one device per markup row.
         Actual Count Tool entries use their numeric Count measurement, when present.
         Shape and color alone may not distinguish two different polygon designs:
@@ -238,6 +241,8 @@ export function BluebeamImport({
               </tbody>
             </table>
           </div>
+          <TakeoffCountTable symbols={parsed.symbols} mapping={mapping}
+            rules={rules} excludedValue={EXCLUDE} />
           <p className="page-description">
             Importing replaces prior Bluebeam quantities on this draft quote version.
             Manual input and existing BOM lines stay intact. After reimport,
