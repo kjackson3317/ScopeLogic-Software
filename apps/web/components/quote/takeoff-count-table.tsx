@@ -1,7 +1,6 @@
 "use client";
 
 import type { BluebeamSymbol } from "../../lib/bluebeam/parse-csv";
-import { getMarkupSymbolId } from "../../lib/bluebeam/symbol-id";
 
 type RuleInput = { inputKey: string; label: string };
 
@@ -42,19 +41,30 @@ function SymbolSwatch({symbol}: {symbol: BluebeamSymbol}) {
 }
 
 export function TakeoffCountTable({symbols, mapping, rules, excludedValue}: Props) {
-  const records = symbols
-    .map(symbol => {
-      const ruleKey = mapping[symbol.key];
-      if (!ruleKey || ruleKey === excludedValue) return null;
-      const rule = rules.find(r => r.inputKey === ruleKey);
-      if (!rule) return null;
-      return {
-        key: symbol.key, code: getMarkupSymbolId(symbol) ?? rule.inputKey,
-        system: systemCode(rule.inputKey), description: rule.label,
-        symbol, count: symbol.count
-      };
-    })
-    .filter((row): row is NonNullable<typeof row> => row !== null);
+  // The table totals by stable ScopeLogic ID, not by color or CSV row.
+  // Multiple appearance signatures for the same ID contribute to ONE count row.
+  const byCode = new Map<string, {
+    key: string; code: string; system: string; description: string;
+    symbol: BluebeamSymbol; count: number; mixedAppearance: boolean; mixedAppearance: boolean;
+  }>();
+  for (const symbol of symbols) {
+    const ruleKey = mapping[symbol.key];
+    if (!ruleKey || ruleKey === excludedValue) continue;
+    const rule = rules.find(r => r.inputKey === ruleKey);
+    if (!rule) continue;
+    const code = rule.inputKey;
+    const prior = byCode.get(code);
+    const mixedAppearance = Boolean(prior && (
+      prior.symbol.shape !== symbol.shape ||
+      prior.symbol.color !== symbol.color
+    ));
+    byCode.set(code, {
+      key: code, code, system: systemCode(code), description: rule.label,
+      symbol: prior?.symbol ?? symbol, count: (prior?.count ?? 0) + symbol.count,
+      mixedAppearance: (prior?.mixedAppearance ?? false) || mixedAppearance
+    });
+  }
+  const records = Array.from(byCode.values()).sort((a, b) => a.code.localeCompare(b.code));
 
   const groups = new Map<string, typeof records>();
   for (const record of records) {
@@ -113,7 +123,7 @@ function FragmentRow({system, values}: {
   return <>
     <tr><th colSpan={5}>{system}</th></tr>
     {values.map(record => <tr key={record.key}>
-      <td><SymbolSwatch symbol={record.symbol}/></td>
+      <td>{record.mixedAppearance ? "Mixed" : <SymbolSwatch symbol={record.symbol}/>}</td>
       <td className="mono">{record.code}</td>
       <td>{record.description}</td>
       <td className="numeric">{record.count.toLocaleString()}</td>
