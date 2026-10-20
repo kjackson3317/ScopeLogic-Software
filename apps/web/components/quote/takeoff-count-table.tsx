@@ -45,7 +45,7 @@ export function TakeoffCountTable({symbols, mapping, rules, excludedValue}: Prop
   // Multiple appearance signatures for the same ID contribute to ONE count row.
   const byCode = new Map<string, {
     key: string; code: string; system: string; description: string;
-    symbol: BluebeamSymbol; count: number; mixedAppearance: boolean; mixedAppearance: boolean;
+    symbol: BluebeamSymbol; count: number; mixedAppearance: boolean;
   }>();
   for (const symbol of symbols) {
     const ruleKey = mapping[symbol.key];
@@ -117,7 +117,7 @@ function FragmentRow({system, values}: {
   system: string;
   values: Array<{
     key: string; code: string; description: string;
-    symbol: BluebeamSymbol; count: number;
+    symbol: BluebeamSymbol; count: number; mixedAppearance: boolean;
   }>;
 }) {
   return <>
