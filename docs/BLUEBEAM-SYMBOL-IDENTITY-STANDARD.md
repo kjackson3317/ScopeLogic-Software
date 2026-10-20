@@ -66,12 +66,33 @@ changes the quantity basis. Different appearance colors or shapes alone must
 not create different IDs. Conversely, different IDs must remain distinct
 even if their color/shape happens to be identical.
 
+## Appearance and Count Table — controlling UI requirement
+
+- **On the PDF drawing:** show only the chosen colored geometric symbol (circle,
+  square, triangle, or diamond). Never print the Symbol ID, assembly name,
+  description, count, or a caption beside/inside the markup.
+- **Markup properties:** store the immutable ScopeLogic Symbol ID in Subject.
+  The optional Label/description is metadata for the Markups List, not a
+  drawing text label. When setting up Count tools, turn **Show Caption OFF**;
+  verify this in the saved Tool Chest item and after placement.
+- **Bottom count table (Revu Markups List, and future ScopeLogic Takeoff UI):**
+  show a small symbol swatch, Symbol ID, friendly description, count, and unit.
+  Group by system, keep counts prominent and accessible during takeoff.
+- **Source of descriptions:** ScopeLogic symbol registry/Rule Engine, never
+  the visible markup. The table may read properties without writing text
+  back onto the PDF.
+- **ScopeLogic import:** preserve the Symbol ID and quantity for each takeoff
+  type. Visual icon/shape/color are presentation metadata, not estimating
+  identity or BOM definitions.
+- The bottom count table is a docked UI panel, not a requirement to imprint
+  a legend or schedule on the drawing.
+
 ## Bluebeam Revu mapping
 
 - Tool Chest organized in Tool Sets by system (SC, FA, ACS, etc.).
 - **Subject** is the exact Symbol ID, e.g. `SC-DATA-2P`.
-- **Label** may be a readable description. Do not use Label as the primary key.
-- Shape and Color are for at-a-glance placement. They are not the primary key.
+- **Label** may be a readable description in the list, with markup captions hidden. Do not use Label as the primary key.
+- Shape and Color are for at-a-glance placement only. They are not the primary key. Disable Show Caption so no code or text is drawn next to the symbol.
 - Use one Count Tool/markup subject per code. Revu Core supports customized
   Count Tool icons and Count totals; export Subject and Count via Markups List.
 - For ordinary markup shapes, each placed markup counts once; Count Tool
@@ -114,6 +135,8 @@ production-ready.
 
 - New Revu symbol named SC-DATA-2P imports as the same stable ID regardless
   of color or shape change.
+- Only the shape is visible on the PDF: no symbol name, code, label or caption.
+- The docked count table provides the descriptive information and total.
 - Forty-two SC-DATA-2P placements produce quantity 42, not 42 guessed items.
 - Changes to the assembly contents do not require renaming the Revu symbol.
 - Unknown valid IDs and malformed IDs are clearly flagged.
